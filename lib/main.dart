@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MyApp());
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MyApp extends StatelessWidget {
+import 'package:cinemapedia/config/theme/app_theme.dart';
+import 'package:cinemapedia/config/router/app_router.dart';
+
+void main() => runApp(const ProviderScope(child: MyApp()));
+
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
+      routerConfig: appRouter,
       title: 'Material App',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Material App Bar'),
-        ),
-        body: const Center(
-          child: Text('Hello World'),
-        ),
-      ),
+      debugShowCheckedModeBanner: false,
+      theme: ref.watch(appTheme),
     );
   }
 }
