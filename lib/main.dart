@@ -21,10 +21,10 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
-      routerConfig: appRouter,
-      title: 'Material App',
       debugShowCheckedModeBanner: false,
       theme: ref.watch(appTheme),
+      routerConfig: appRouter,
+      title: 'Cinemapedia',
     );
   }
 }
