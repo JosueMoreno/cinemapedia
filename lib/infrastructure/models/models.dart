@@ -1,0 +1,1 @@
+export 'package:cinemapedia/infrastructure/models/tmdb/tmdb_model.dart';

@@ -1,0 +1,1 @@
+export 'package:cinemapedia/infrastructure/mappers/movie_mapper.dart';

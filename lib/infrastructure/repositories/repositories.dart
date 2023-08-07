@@ -1,0 +1,1 @@
+export 'package:cinemapedia/infrastructure/repositories/movies_repository_implementation.dart';
