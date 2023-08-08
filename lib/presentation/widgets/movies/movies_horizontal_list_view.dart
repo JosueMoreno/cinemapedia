@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:animate_do/animate_do.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:cinemapedia/config/utils/formats.dart';
 import 'package:cinemapedia/config/utils/extensions.dart';
@@ -9,15 +10,15 @@ import 'package:cinemapedia/domain/entities/entities.dart';
 class MoviesHorizontalListView extends StatefulWidget {
   final String? title;
   final String? subtitle;
-  final List<Movie> movies;
-  final VoidCallback? loadNextPage;
+  final AsyncValue<List<Movie>> movies;
+  final VoidCallback loadNextPage;
 
   const MoviesHorizontalListView({
     super.key,
     this.title,
     this.subtitle,
-    this.loadNextPage,
     required this.movies,
+    required this.loadNextPage,
   });
 
   @override
@@ -31,11 +32,10 @@ class _MoviesHorizontalListViewState extends State<MoviesHorizontalListView> {
   void initState() {
     super.initState();
     scrollController.addListener(() {
-      if (widget.loadNextPage.isNull) return;
+      final ScrollPosition position = scrollController.position;
 
-      if (scrollController.position.pixels + 200 >=
-          scrollController.position.maxScrollExtent) {
-        widget.loadNextPage!();
+      if (position.pixels + 222 >= position.maxScrollExtent) {
+        widget.loadNextPage();
       }
     });
   }
@@ -48,28 +48,34 @@ class _MoviesHorizontalListViewState extends State<MoviesHorizontalListView> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.55,
-      child: Column(
-        children: [
-          if (widget.title.isNotNull || widget.subtitle.isNotNull)
-            _Title(
-              title: widget.title,
-              subtitle: widget.subtitle,
+    return widget.movies.when(
+      data: (movies) => SizedBox(
+        height: MediaQuery.of(context).size.height * 0.5,
+        child: Column(
+          children: [
+            if (widget.title.isNotNull || widget.subtitle.isNotNull)
+              _Title(
+                title: widget.title,
+                subtitle: widget.subtitle,
+              ),
+            Expanded(
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: movies.length,
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                itemBuilder: (BuildContext context, int index) {
+                  return _Slide(movie: movies[index]);
+                },
+              ),
             ),
-          Expanded(
-            child: ListView.builder(
-              controller: scrollController,
-              itemCount: widget.movies.length,
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              itemBuilder: (BuildContext context, int index) {
-                return _Slide(movie: widget.movies[index]);
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
+      loading: () => const Center(
+        child: CircularProgressIndicator.adaptive(),
+      ),
+      error: (error, stackTrace) => Text('$error'),
     );
   }
 }
@@ -106,9 +112,9 @@ class _Slide extends StatelessWidget {
                       ),
                     ),
                   );
+                } else {
+                  return FadeIn(child: child);
                 }
-
-                return FadeIn(child: child);
               },
             ),
           ),
@@ -119,10 +125,12 @@ class _Slide extends StatelessWidget {
             child: Center(
               child: Text(
                 movie.title,
-                textAlign: TextAlign.center,
                 maxLines: 2,
+                textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleSmall,
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                      fontSize: MediaQuery.of(context).size.height * 0.0195,
+                    ),
               ),
             ),
           ),

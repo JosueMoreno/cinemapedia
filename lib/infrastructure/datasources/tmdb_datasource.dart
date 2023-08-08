@@ -17,10 +17,9 @@ class TMDBDatasource extends MoviesDataSource {
     ),
   );
 
-  @override
-  Future<List<Movie>> getNowPlaying({required int page}) async {
+  Future<List<Movie>> getMovies({required String path, required int page}) async {
     final Response response = await dio.get(
-      '/movie/now_playing',
+      path,
       queryParameters: {
         'page': page,
       },
@@ -31,5 +30,25 @@ class TMDBDatasource extends MoviesDataSource {
         .results!
         .map((result) => MovieMapper.fromTMDBToEntity(result))
         .toList();
+  }
+
+  @override
+  Future<List<Movie>> getNowPlaying({required int page}) async {
+    return getMovies(path: '/movie/now_playing', page: page);
+  }
+
+  @override
+  Future<List<Movie>> getPopular({required int page}) {
+    return getMovies(path: '/movie/popular', page: page);
+  }
+
+  @override
+  Future<List<Movie>> getTopRated({required int page}) {
+    return getMovies(path: '/movie/top_rated', page: page);
+  }
+
+  @override
+  Future<List<Movie>> getUpcoming({required int page}) {
+    return getMovies(path: '/movie/upcoming', page: page);
   }
 }

@@ -24,38 +24,53 @@ class _HomeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CustomScrollView(
-      slivers: [
-        const SliverAppBar(
-          floating: true,
-          title: CustomAppBar(),
-        ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            childCount: 1,
-            (context, index) {
-              return Column(
-                children: [
-                  const MoviesSlideShow(),
-                  ref.watch(nowPlayingProvider).when(
-                        data: (movies) => MoviesHorizontalListView(
-                          title: 'En Cines',
-                          subtitle: 'Lunes 07/Ago',
-                          movies: movies,
-                          loadNextPage:
-                              ref.read(nowPlayingProvider.notifier).loadNextPage,
-                        ),
-                        loading: () => const Center(
-                          child: CircularProgressIndicator.adaptive(),
-                        ),
-                        error: (error, stackTrace) => Text('$error'),
-                      ),
-                ],
-              );
-            },
+    return Visibility(
+      visible: ref.watch(initialLoadingProvider),
+      replacement: const FullScreenLoader(),
+      child: CustomScrollView(
+        slivers: [
+          const SliverAppBar(
+            floating: true,
+            title: CustomAppBar(),
           ),
-        ),
-      ],
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              childCount: 1,
+              (context, index) {
+                return Column(
+                  children: [
+                    const MoviesSlideShow(),
+                    MoviesHorizontalListView(
+                      title: 'Now Playing',
+                      subtitle: 'Lunes 07/Ago',
+                      movies: ref.watch(nowPlayingMovies),
+                      loadNextPage: ref.read(nowPlayingMovies.notifier).loadNextPage,
+                    ),
+                    MoviesHorizontalListView(
+                      title: 'Popular',
+                      //subtitle: 'Lunes 07/Ago',
+                      movies: ref.watch(popularMovies),
+                      loadNextPage: ref.read(popularMovies.notifier).loadNextPage,
+                    ),
+                    MoviesHorizontalListView(
+                      title: 'Top Rated',
+                      //subtitle: 'Lunes 07/Ago',
+                      movies: ref.watch(topRatedMovies),
+                      loadNextPage: ref.read(topRatedMovies.notifier).loadNextPage,
+                    ),
+                    MoviesHorizontalListView(
+                      title: 'Upcoming',
+                      //subtitle: 'Lunes 07/Ago',
+                      movies: ref.watch(upcomingMovies),
+                      loadNextPage: ref.read(upcomingMovies.notifier).loadNextPage,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

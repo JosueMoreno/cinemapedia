@@ -14,7 +14,7 @@ class MoviesSlideShow extends ConsumerWidget {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.27,
       width: double.infinity,
-      child: ref.watch(nowPlayingProvider).when(
+      child: ref.watch(nowPlayingMovies).when(
             data: (movies) => Swiper(
               scale: 0.88,
               autoplay: true,
