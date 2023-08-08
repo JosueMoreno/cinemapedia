@@ -14,6 +14,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: _HomeView(),
+      bottomNavigationBar: CustomNavigationBar(),
     );
   }
 }
@@ -23,22 +24,36 @@ class _HomeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: [
-        const CustomAppBar(),
-        Expanded(
-          child: ref.watch(nowPlayingProvider).when(
-                data: (movies) => ListView.builder(
-                  itemCount: movies.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(title: Text(movies[index].title));
-                  },
-                ),
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-                error: (error, stackTrace) => Text('$error'),
-              ),
+    return CustomScrollView(
+      slivers: [
+        const SliverAppBar(
+          floating: true,
+          title: CustomAppBar(),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            childCount: 1,
+            (context, index) {
+              return Column(
+                children: [
+                  const MoviesSlideShow(),
+                  ref.watch(nowPlayingProvider).when(
+                        data: (movies) => MoviesHorizontalListView(
+                          title: 'En Cines',
+                          subtitle: 'Lunes 07/Ago',
+                          movies: movies,
+                          loadNextPage:
+                              ref.read(nowPlayingProvider.notifier).loadNextPage,
+                        ),
+                        loading: () => const Center(
+                          child: CircularProgressIndicator.adaptive(),
+                        ),
+                        error: (error, stackTrace) => Text('$error'),
+                      ),
+                ],
+              );
+            },
+          ),
         ),
       ],
     );

@@ -19,13 +19,17 @@ class TMDBDatasource extends MoviesDataSource {
 
   @override
   Future<List<Movie>> getNowPlaying({required int page}) async {
-    final Response response = await dio.get('/movie/now_playing');
-    final List<Movie> movies = TMDB
+    final Response response = await dio.get(
+      '/movie/now_playing',
+      queryParameters: {
+        'page': page,
+      },
+    );
+
+    return TMDB
         .fromJson(response.data)
         .results!
         .map((result) => MovieMapper.fromTMDBToEntity(result))
         .toList();
-
-    return movies;
   }
 }

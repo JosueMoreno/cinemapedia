@@ -10,6 +10,7 @@ final nowPlayingProvider = AsyncNotifierProvider<MoviesNotifier, List<Movie>>(()
 });
 
 class MoviesNotifier extends AsyncNotifier<List<Movie>> {
+  bool isLoading = false;
   int currentPage = 1;
 
   @override
@@ -18,12 +19,18 @@ class MoviesNotifier extends AsyncNotifier<List<Movie>> {
   }
 
   Future<void> loadNextPage() async {
-    state = const AsyncValue.loading();
+    if (isLoading) return;
+
+    isLoading = true;
+
     state = await AsyncValue.guard(() async {
       return [
         ...state.asData!.value,
-        ...await ref.read(moviesRepositoryProvider).getNowPlaying(page: currentPage++),
+        ...await ref.read(moviesRepositoryProvider).getNowPlaying(page: ++currentPage),
       ];
     });
+
+    await Future.delayed(const Duration(milliseconds: 111));
+    isLoading = false;
   }
 }
