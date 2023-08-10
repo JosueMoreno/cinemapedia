@@ -1,20 +1,20 @@
 // ignore_for_file: non_constant_identifier_names
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'tmdb_model.freezed.dart';
-part 'tmdb_model.g.dart';
+part 'movie_list_model.freezed.dart';
+part 'movie_list_model.g.dart';
 
 @freezed
-class TMDB with _$TMDB {
-  const factory TMDB({
+class MovieList with _$MovieList {
+  const factory MovieList({
     final int? page,
     final Dates? dates,
     final int? total_pages,
     final int? total_results,
     final List<Result>? results,
-  }) = _TMDB;
+  }) = _MovieList;
 
-  factory TMDB.fromJson(Map<String, dynamic> json) => _$TMDBFromJson(json);
+  factory MovieList.fromJson(Map<String, dynamic> json) => _$MovieListFromJson(json);
 }
 
 @freezed

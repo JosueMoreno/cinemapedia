@@ -3,12 +3,9 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:cinemapedia/domain/entities/entities.dart';
-import 'package:cinemapedia/infrastructure/datasources/datasources.dart';
-import 'package:cinemapedia/infrastructure/repositories/repositories.dart';
+import 'package:cinemapedia/presentation/providers/providers.dart';
 
-typedef MovieCallBack = Future<List<Movie>> Function({required int page});
-
-final repository = MoviesRepositoryImplementation(dataSource: TMDBDatasource());
+typedef MovieListCallBack = Future<List<Movie>> Function({required int page});
 
 final nowPlayingMovies = AsyncNotifierProvider<MoviesNotifier, List<Movie>>(() {
   return MoviesNotifier(fetchMoreMovies: repository.getNowPlaying);
@@ -27,7 +24,7 @@ final upcomingMovies = AsyncNotifierProvider<MoviesNotifier, List<Movie>>(() {
 });
 
 class MoviesNotifier extends AsyncNotifier<List<Movie>> {
-  final MovieCallBack fetchMoreMovies;
+  final MovieListCallBack fetchMoreMovies;
 
   MoviesNotifier({required this.fetchMoreMovies});
 
@@ -50,6 +47,7 @@ class MoviesNotifier extends AsyncNotifier<List<Movie>> {
     });
 
     await Future.delayed(const Duration(milliseconds: 111));
+
     isLoading = false;
   }
 }

@@ -4,5 +4,7 @@ import 'package:cinemapedia/infrastructure/datasources/datasources.dart';
 import 'package:cinemapedia/infrastructure/repositories/repositories.dart';
 
 final moviesRepositoryProvider = Provider(
-  (ref) => MoviesRepositoryImplementation(dataSource: TMDBDatasource()),
+  (ref) => MoviesRepositoryImpl(dataSource: TMDBMoviesDatasource()),
 );
+
+final repository = MoviesRepositoryImpl(dataSource: TMDBMoviesDatasource());

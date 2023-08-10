@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
+import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:cinemapedia/config/utils/formats.dart';
 import 'package:cinemapedia/config/utils/extensions.dart';
 import 'package:cinemapedia/domain/entities/entities.dart';
+import 'package:cinemapedia/presentation/providers/providers.dart';
 
 class MoviesHorizontalListView extends StatefulWidget {
   final String? title;
   final String? subtitle;
-  final AsyncValue<List<Movie>> movies;
   final VoidCallback loadNextPage;
+  final AsyncValue<List<Movie>> movies;
 
   const MoviesHorizontalListView({
     super.key,
@@ -82,13 +84,13 @@ class _MoviesHorizontalListViewState extends State<MoviesHorizontalListView> {
 
 /*---------------------------Local Widgets-----------------------------------*/
 
-class _Slide extends StatelessWidget {
+class _Slide extends ConsumerWidget {
   final Movie movie;
 
   const _Slide({required this.movie});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 11),
       child: Column(
@@ -97,14 +99,14 @@ class _Slide extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(22),
             child: Image.network(
-              width: MediaQuery.of(context).size.width * 0.44,
+              width: MediaQuery.of(context).size.height * 0.22,
               height: MediaQuery.of(context).size.height * 0.3,
               fit: BoxFit.cover,
               movie.posterPath,
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress.isNotNull) {
                   return SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.44,
+                    width: MediaQuery.of(context).size.height * 0.22,
                     height: MediaQuery.of(context).size.height * 0.3,
                     child: const Center(
                       child: CircularProgressIndicator.adaptive(
@@ -113,15 +115,27 @@ class _Slide extends StatelessWidget {
                     ),
                   );
                 } else {
-                  return FadeIn(child: child);
+                  return GestureDetector(
+                    onTap: () async {
+                      await ref
+                          .read(movieInfoProvider.notifier)
+                          .loadMovie('${movie.id}');
+
+                      await ref
+                          .read(actorsByMovieProvider.notifier)
+                          .loadActors('${movie.id}')
+                          .then((value) => context.push('/movie/${movie.id}'));
+                    },
+                    child: FadeIn(child: child),
+                  );
                 }
               },
             ),
           ),
           const SizedBox(height: 3),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.44,
-            height: MediaQuery.of(context).size.height * 0.055,
+            width: MediaQuery.of(context).size.height * 0.22,
+            height: MediaQuery.of(context).size.height * 0.05,
             child: Center(
               child: Text(
                 movie.title,
@@ -129,13 +143,13 @@ class _Slide extends StatelessWidget {
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      fontSize: MediaQuery.of(context).size.height * 0.0195,
+                      fontSize: MediaQuery.of(context).size.height * 0.0188,
                     ),
               ),
             ),
           ),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.44,
+            width: MediaQuery.of(context).size.height * 0.22,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -174,8 +188,8 @@ class _Title extends StatelessWidget {
       margin: EdgeInsets.only(
         left: MediaQuery.of(context).size.width * 0.033,
         right: MediaQuery.of(context).size.width * 0.033,
-        top: MediaQuery.of(context).size.width * 0.055,
-        bottom: MediaQuery.of(context).size.width * 0.033,
+        top: MediaQuery.of(context).size.height * 0.033,
+        bottom: MediaQuery.of(context).size.height * 0.022,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -6,7 +6,7 @@ import 'package:cinemapedia/config/constants/environment.dart';
 import 'package:cinemapedia/infrastructure/mappers/mappers.dart';
 import 'package:cinemapedia/domain/datasources/datasources.dart';
 
-class TMDBDatasource extends MoviesDataSource {
+class TMDBMoviesDatasource extends MoviesDataSource {
   final Dio dio = Dio(
     BaseOptions(
       baseUrl: 'https://api.themoviedb.org/3',
@@ -25,7 +25,7 @@ class TMDBDatasource extends MoviesDataSource {
       },
     );
 
-    return TMDB
+    return MovieList
         .fromJson(response.data)
         .results!
         .map((result) => MovieMapper.fromTMDBToEntity(result))
@@ -50,5 +50,16 @@ class TMDBDatasource extends MoviesDataSource {
   @override
   Future<List<Movie>> getUpcoming({required int page}) {
     return getMovies(path: '/movie/upcoming', page: page);
+  }
+
+  @override
+  Future<Movie> getMovieByID({required String id}) async {
+    final Response response = await dio.get('/movie/$id');
+
+    if (response.statusCode != 200) throw Exception('Movie with id: $id not found');
+
+    return MovieMapper.fromTMDBMovieDetailsToEntity(
+      MovieDetails.fromJson(response.data),
+    );
   }
 }
