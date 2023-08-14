@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import 'package:cinemapedia/config/utils/extensions.dart';
 import 'package:cinemapedia/domain/entities/entities.dart';
 import 'package:cinemapedia/infrastructure/models/models.dart';
 import 'package:cinemapedia/config/constants/environment.dart';
@@ -17,11 +18,12 @@ class TMDBMoviesDatasource extends MoviesDataSource {
     ),
   );
 
-  Future<List<Movie>> getMovies({required String path, required int page}) async {
+  Future<List<Movie>> getMovies({required String path, int? page, String? query}) async {
     final Response response = await dio.get(
       path,
       queryParameters: {
-        'page': page,
+        if(page.isNotNull) 'page': page,
+        if(query.isNotNull) 'query': query,
       },
     );
 
@@ -61,5 +63,10 @@ class TMDBMoviesDatasource extends MoviesDataSource {
     return MovieMapper.fromTMDBMovieDetailsToEntity(
       MovieDetails.fromJson(response.data),
     );
+  }
+  
+  @override
+  Future<List<Movie>> searchMovies({required String query}) async {
+    return getMovies(path: '/search/movie', query: query);
   }
 }

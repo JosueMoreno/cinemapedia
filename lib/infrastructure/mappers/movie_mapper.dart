@@ -15,14 +15,20 @@ class MovieMapper {
       voteAverage: result.vote_average!,
       originalTitle: result.original_title ?? '',
       originalLanguage: result.original_language ?? '',
-      releaseDate: DateTime.parse(result.release_date!),
+      releaseDate: DateTime.parse(
+        result.release_date.isNull
+            ? '1900-12-12'
+            : result.release_date!.isEmpty
+                ? '1900-12-12'
+                : result.release_date!,
+      ),
       genreIds: result.genre_ids?.map((id) => id.toString()).toList() ?? [],
       backdropPath: result.backdrop_path.isNotNull
           ? 'https://image.tmdb.org/t/p/original${result.backdrop_path}'
-          : 'https://placehold.co/1600x900/EEE/31343C?font=roboto&text=The+Movie+DB',
+          : 'https://www.underconsideration.com/brandnew/archives/the_movie_db_logo_before_after.png',
       posterPath: result.poster_path.isNotNull
           ? 'https://image.tmdb.org/t/p/original${result.poster_path}'
-          : 'https://placehold.co/333x666/EEE/31343C?font=roboto&text=The\\n+Movie\\n+DB',
+          : 'https://static.displate.com/857x1200/displate/2022-04-15/7422bfe15b3ea7b5933dffd896e9c7f9_46003a1b7353dc7b5a02949bd074432a.jpg',
     );
   }
 
@@ -38,14 +44,20 @@ class MovieMapper {
       voteAverage: movie.vote_average!,
       originalTitle: movie.original_title ?? '',
       originalLanguage: movie.original_language ?? '',
-      releaseDate: DateTime.parse(movie.release_date!),
+      releaseDate: DateTime.parse(
+        movie.release_date.isNull
+            ? '1900-12-12'
+            : movie.release_date!.isEmpty
+                ? '1900-12-12'
+                : movie.release_date!,
+      ),
       genreIds: movie.genres?.map((genre) => genre.name ?? '').toList() ?? [],
       backdropPath: movie.backdrop_path.isNotNull
           ? 'https://image.tmdb.org/t/p/original${movie.backdrop_path}'
-          : 'https://placehold.co/1600x900/EEE/31343C?font=roboto&text=The+Movie+DB',
+          : 'https://www.underconsideration.com/brandnew/archives/the_movie_db_logo_before_after.png',
       posterPath: movie.poster_path.isNotNull
           ? 'https://image.tmdb.org/t/p/original${movie.poster_path}'
-          : 'https://placehold.co/333x666/EEE/31343C?font=roboto&text=The\\n+Movie\\n+DB',
+          : 'https://static.displate.com/857x1200/displate/2022-04-15/7422bfe15b3ea7b5933dffd896e9c7f9_46003a1b7353dc7b5a02949bd074432a.jpg',
     );
   }
 }
